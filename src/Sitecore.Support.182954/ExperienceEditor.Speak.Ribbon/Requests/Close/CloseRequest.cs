@@ -15,6 +15,7 @@ namespace Sitecore.Support.ExperienceEditor.Speak.Ribbon.Requests.Close
   using Sitecore.ExperienceEditor.Speak.Server.Responses;
   using Sitecore.Text;
   using Sitecore.Web;
+  using System.Web;
 
   /// <summary>
   /// The close request.
@@ -39,11 +40,11 @@ namespace Sitecore.Support.ExperienceEditor.Speak.Ribbon.Requests.Close
     /// </returns>
     public override PipelineProcessorResponseValue ProcessRequest()
     {
-      Assert.IsNotNullOrEmpty(this.RequestContext.Value, "Could not get string value for requestArgs:{0}", this.Args.Data);
+      Assert.IsNotNullOrEmpty(RequestContext.Value, "Could not get string value for requestArgs:{0}", Args.Data);
 
-      var url = new UrlString(this.RequestContext.Value);
+      var url = new UrlString(HttpUtility.UrlDecode(RequestContext.Value));
 
-      var sessionValueKey = url["sc_de"];
+      string sessionValueKey = url["sc_de"];
       if (!string.IsNullOrEmpty(sessionValueKey))
       {
         WebUtil.RemoveSessionValue(sessionValueKey);
@@ -52,7 +53,10 @@ namespace Sitecore.Support.ExperienceEditor.Speak.Ribbon.Requests.Close
 
       url[ModeQueryString] = NormalMode;
 
-      return new PipelineProcessorResponseValue { Value = url.ToString() };
+      return new PipelineProcessorResponseValue
+      {
+        Value = url.ToString()
+      };
     }
   }
 }
